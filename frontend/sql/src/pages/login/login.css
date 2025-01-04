@@ -1,22 +1,19 @@
-body{
-    background-color: #DCDCDC;
-    margin-top:20px;
-}
-.card {
-    margin-bottom: 1.5rem;
-    box-shadow: 0 1px 15px 1px rgba(52,40,104,.08);
-}
-
-.card {
-    position: relative;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    min-width: 0;
-    word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    border: 1px solid #e5e9f2;
-    border-radius: .2rem;
-}
+.container {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+  
+  .card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-primary {
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  
+  

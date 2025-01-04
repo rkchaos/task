@@ -7,12 +7,14 @@ import Project from "./pages/project/project"
 import Nopage from "./pages/nopage/Nopage"
 import Task from "./pages/alltask/alltask"
 import Employee from "./pages/employee_management/employee"
+import Welcome from "./pages/welcome/welcome"
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 function App() {
   return (
   <Routes>
+    <Route element={<Welcome/>} path='/'/> 
 <Route element={<Login/>} path='login'/>
 {/* <Route element={<Dashboard/>} path='dashboard'/> */}
 <Route element={<Team/>} path='team'/>
