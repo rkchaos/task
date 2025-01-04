@@ -14,7 +14,7 @@ function App() {
   return (
   <Routes>
 <Route element={<Login/>} path='login'/>
-{/* <Route element={<Dashboard/>} path='dashboard'/> */}
+<Route element={<Login/>} path='/'/>
 <Route element={<Team/>} path='team'/>
 <Route element={<Project/>} path='project'/>
 <Route path ="tasks" element={<Task/>}/>
