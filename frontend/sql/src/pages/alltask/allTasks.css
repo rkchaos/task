@@ -43,3 +43,29 @@
     display: flex;
     justify-content: flex-end;
 }
+.custom-accordion-header .accordion-button {
+    font-weight: bold;        /* Makes text bold */
+    color: #333333;           /* Dark color for text */
+    background-color: #f0f0f0;  /* Optional: Customize the background */
+  }
+  
+  .custom-accordion-header .accordion-button:not(.collapsed) {
+    color: #111111;  /* Darker color when the accordion item is expanded */
+    background-color: #e0e0e0;  /* Optional: Change background color when expanded */
+  }
+.text{
+    color: red;
+    font-weight: bold;
+}  
+.text2{
+    color: green;
+    font-weight: bold;
+}
+.text3{
+    color: blue;
+    font-weight: bold;
+}
+.cent{
+    text-align: center;
+    font-weight: bold;
+}

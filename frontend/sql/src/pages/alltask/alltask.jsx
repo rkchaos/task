@@ -1,16 +1,84 @@
 import React, { useEffect, useState } from "react";
 import Dashboard from "../../components/dashboard/Dashboard";
-import Select from "react-select";
+// import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import ProtectedRoute from '../../components/protectedRoute/protectedRoute';
 import axios from "axios";
+import {
+  MDBAccordion, MDBAccordionItem, MDBCard,
+  MDBCardBody,
+  MDBCardTitle,
+  MDBCardSubTitle,
+  MDBCardText,
+  MDBCardLink,
+  MDBCol
+} from 'mdb-react-ui-kit';
+import "./allTasks.css"
+import moment from 'moment';
 
 function AllTask() {
   let navigate = useNavigate()
   const [showModal, setShowModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  // const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [userRole, setUserRole] = useState("");
+  const [projectOptions, setProjectOptions] = useState([]);
+  const [user, setUser] = useState({})
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await axios.get("http://localhost:8080/projectManager", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (res.data.data) {
+          const projectOptions = res.data.data.map((project) => ({
+            value: project.project_id, // Use project_id
+            label: project.project_name, // Use project_name
+          }));
+          setProjectOptions(projectOptions);
+        }
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+      }
+    };
+
+    if (userRole === "manager") {
+      fetchProjects();
+    }
+
+  }, [userRole]);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await axios.get("http://localhost:8080/AllProject", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (res.data.data) {
+          const projectOptions = res.data.data.map((project) => ({
+            value: project.project_id, // Use project_id
+            label: project.project_name, // Use project_name
+          }));
+          setProjectOptions(projectOptions);
+        }
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+      }
+    };
+
+    if (userRole === "owner" || userRole === "admin") {
+      fetchProjects();
+    }
+
+  }, [userRole]);
+  const [users, setUsers] = useState([]);
+
   useEffect(() => {
     async function fetchUserData() {
       const token = localStorage.getItem("token");
@@ -21,6 +89,7 @@ function AllTask() {
           }
         });
         setUserRole(res.data.current.designation);
+        setUser(res.data.current)
       } catch (err) {
         console.error(err);
       }
@@ -28,6 +97,42 @@ function AllTask() {
     fetchUserData();
   }, []);
 
+
+
+  useEffect(() => {
+    async function fetchUserData() {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await axios.get("http://localhost:8080/user", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        // setUserRole(res.data.current.designation);
+        if (res.data.current.designation === "admin" || res.data.current.designation === "owner") {
+          const userRes = await axios.get("http://localhost:8080/user", {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          });
+
+          setUsers(userRes.data.data);
+        } else if (res.data.current.designation === "manager") {
+          const userRes = await axios.get("http://localhost:8080/particular_manager_employee", {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          });
+          setUsers(userRes.data.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchUserData();
+  }, []);
+
+  // console.log(users)
   const [formData, setFormData] = useState({
     projectName: "",
     projectId: "",
@@ -37,8 +142,9 @@ function AllTask() {
     status: "",
     startDate: "",
     deadline: "",
-    completionDate: "",
-    deliverable: "",
+    Assign: "",
+    // AssignId :"",
+    // deliverable: "",
     notes: "",
   });
   const [errors, setErrors] = useState({
@@ -50,17 +156,13 @@ function AllTask() {
     status: false,
     startDate: false,
     deadline: false,
-    completionDate: false,
-    deliverable: false,
+    Assign: false,
+    // AssignId:false,
+    // deliverable: false,
     employees: false,
   });
 
-  const employeeOptions = [
-    { value: "emp1", label: "Employee 1" },
-    { value: "emp2", label: "Employee 2" },
-    { value: "emp3", label: "Employee 3" },
-    { value: "emp4", label: "Employee 4" },
-  ];
+
   const cardStyle = {
     backgroundColor: "white",
     borderRadius: "10px",
@@ -83,51 +185,125 @@ function AllTask() {
     if (new Date(formData.deadline) < new Date(formData.startDate)) {
       formErrors["deadline"] = "Deadline cannot be earlier than start date.";
     }
-    if (!selectedEmployees.length) {
-      formErrors["employees"] = true;
-    }
+
 
     setErrors(formErrors);
 
+    console.log(formErrors)
     if (Object.keys(formErrors).length === 0) {
       setShowModal(false);
       setShowConfirmModal(true);
     }
   };
+  // console.log(formData)
+  // handleConfirmYes
+  const handleConfirmYes = async () => {
+    const token = localStorage.getItem("token");
+
+    const dataToSend = {
+      projectId: formData.projectId,         // project_id in SQL
+      taskName: formData.taskName,           // task_name in SQL
+      priority: formData.priority,           // priority in SQL
+      status: formData.status,               // status in SQL
+      startDate: formData.startDate,         // start_date in SQL
+      deadline: formData.deadline,           // deadline in SQL
+      taskOwner: formData.Assign,         // task_manager_id in SQL
+      assignedEmployeeId: formData.taskOwner,   // assigned_employee_id in SQL (assuming it's a user ID)
+      createdBy: formData.taskOwner,         // created_by in SQL
+      progressPercentage: 0,                 // progress_percentage in SQL (assuming default 0)
+      updatedAt: new Date().toISOString(),   // updated_at in SQL
+      notes: formData.notes                  // notes in SQL
+    };
+    console.log(dataToSend)
+    try {
+      const res = await axios.post("http://localhost:8080/api/tasks", dataToSend, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          // "Content-Type": "application/json"
+        }
+      });
+      setShowConfirmModal(false);
+      setErrors({});
+      location.reload()
+      console.log("Task created successfully:");
+    } catch (error) {
+      console.error("Error creating task:", error);
+    }
 
 
-  const handleConfirmYes = () => {
-    setShowConfirmModal(false);
-    alert("Task added successfully!");
-
-
-    setFormData({
-      projectName: "",
-      projectId: "",
-      taskName: "",
-      priority: "",
-      taskOwner: "",
-      status: "",
-      startDate: "",
-      deadline: "",
-      completionDate: "",
-      deliverable: "",
-      notes: "",
-    });
-    setSelectedEmployees([]);
-    setErrors({});
   };
+  // console.log(formData)
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
+
+    // Update formData
+    setFormData((prev) => {
+      if (id === "projectName") {
+        // Find the corresponding project ID based on the selected project name
+        const selectedProject = projectOptions.find(
+
+          (project) => project.value == value
+        );
+        // console.log(selectedProject)
+        return {
+          ...prev,
+          projectName: value, // Update projectName dynamically
+          projectId: selectedProject ? selectedProject.value : "", // Update projectId dynamically
+        };
+      }
+
+      return {
+        ...prev,
+        [id]: value,
+      };
+    });
   };
 
-  
+  useEffect(() => {
+    if (user && user.name) {
+      setFormData((prev) => ({
+        ...prev,
+        Assign: user.employee_id,
+      }));
+    }
+  }, [user]);
 
+  let [useTasks, setTasks] = useState([])
+  useEffect(() => {
+    async function alltask() {
+      let token = localStorage.getItem("token")
+      try {
+        let res = await axios.get("http://localhost:8080/tasks", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            // "Content-Type": "application/json"
+          }
+        })
+        // console.log(res.data.tasks)
+        const formattedTasks = res.data.tasks.map((item) => ({
+          ...item,
+          start_date: moment(item.start_date).format('MM/DD/YYYY hh:mm A'),
+          deadline: moment(item.start_date).format('MM/DD/YYYY hh:mm A'),
+
+        }));
+
+        setTasks(formattedTasks);
+        // console.log(formattedTasks)
+        // setTasks(res.data.tasks)
+      }
+
+      catch (err) {
+        console.log(err)
+      }
+    }
+    if (userRole == "owner" ||userRole == "admin"|| userRole == "employee" ||userRole== "manager") {
+      alltask()
+    }
+
+  }, [userRole])
+  // console.log(user.designation)
+  const [active, setActive] = useState(0);
   return (
     <ProtectedRoute>
       <div>
@@ -157,7 +333,7 @@ function AllTask() {
             )
           }
 
-          
+
         </div>
       </div>
 
@@ -170,21 +346,31 @@ function AllTask() {
               <button type="button" className="btn-close" onClick={handleCloseModal}></button>
             </div>
             <div className="modal-body">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="row g-3">
                   <div className="col-md-6">
                     <label htmlFor="projectName" className="form-label">
                       Project Name
                     </label>
-                    <input
-                      type="text"
+                    <select
                       className={`form-control ${errors.projectName ? "is-invalid" : ""}`}
                       id="projectName"
                       value={formData.projectName}
                       onChange={handleInputChange}
-                    />
-                    {errors.projectName && <div className="invalid-feedback">This field is required.</div>}
+                    >
+                      <option value="">Select a project</option>
+                      {projectOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.projectName && (
+                      <div className="invalid-feedback">This field is required.</div>
+                    )}
                   </div>
+
+
                   <div className="col-md-6">
                     <label htmlFor="projectId" className="form-label">
                       Project ID
@@ -195,6 +381,7 @@ function AllTask() {
                       id="projectId"
                       value={formData.projectId}
                       onChange={handleInputChange}
+                      readOnly
                     />
                     {errors.projectId && <div className="invalid-feedback">This field is required.</div>}
                   </div>
@@ -211,34 +398,71 @@ function AllTask() {
                     />
                     {errors.taskName && <div className="invalid-feedback">This field is required.</div>}
                   </div>
+                  {/* <div className="col-md-6">
+                    <label htmlFor="taskOwner" className="form-label">
+                      Task Owner
+                    </label>
+                    <select
+                      className={`form-control ${errors.taskOwner ? "is-invalid" : ""}`}
+                      id="taskOwner"
+                      value={formData.taskOwner}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">Select Task Owner</option>
+                      {Array.isArray(users) && users.length > 0 ? (
+                        users.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.name}
+                          </option>
+                        ))
+                      ) : (
+                        <option disabled>No users available</option>
+                      )}
+                    </select>
+
+                    {errors.taskOwner && <div className="invalid-feedback">This field is required.</div>}
+                  </div> */}
+
                   <div className="col-md-6">
                     <label htmlFor="priority" className="form-label">
                       Priority
                     </label>
                     <select
-                      className={`form-select ${errors.priority ? "is-invalid" : ""}`}
+                      className={`form-control ${errors.priority ? "is-invalid" : ""}`}
                       id="priority"
                       value={formData.priority}
                       onChange={handleInputChange}
                     >
                       <option value="">Select Priority</option>
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
+                      <option value="P3">Low</option>
+                      <option value="P2">Medium</option>
+                      <option value="P1">High</option>
                     </select>
+
                     {errors.priority && <div className="invalid-feedback">This field is required.</div>}
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="taskOwner" className="form-label">
                       Task Owner
                     </label>
-                    <input
-                      type="text"
+                    <select
                       className={`form-control ${errors.taskOwner ? "is-invalid" : ""}`}
                       id="taskOwner"
                       value={formData.taskOwner}
                       onChange={handleInputChange}
-                    />
+                    >
+                      <option value="">Select Task Owner</option>
+                      {Array.isArray(users) && users.length > 0 ? (
+                        users.map((user) => (
+                          <option key={user.employee_id} value={user.employee_id}>  {/* Only employee_id is used as the value */}
+                            {user.employee_id} - {user.name}  {/* Display employee_id and name */}
+                          </option>
+                        ))
+                      ) : (
+                        <option disabled>No users available</option>
+                      )}
+                    </select>
+
                     {errors.taskOwner && <div className="invalid-feedback">This field is required.</div>}
                   </div>
                   <div className="col-md-6">
@@ -252,12 +476,14 @@ function AllTask() {
                       onChange={handleInputChange}
                     >
                       <option value="">Select Status</option>
-                      <option value="Not Started">Not Started</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Completed">Completed</option>
+                      <option value="not_started">Not Started</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="completed">Completed</option>
+                      <option value="on_hold">On Hold</option>
                     </select>
                     {errors.status && <div className="invalid-feedback">This field is required.</div>}
                   </div>
+
                   <div className="col-md-6">
                     <label htmlFor="startDate" className="form-label">
                       Start Date
@@ -284,20 +510,8 @@ function AllTask() {
                     />
                     {errors.deadline && <div className="invalid-feedback">Deadline cannot be earlier than start date.</div>}
                   </div>
-                  <div className="col-md-6">
-                    <label htmlFor="completionDate" className="form-label">
-                      Completion Date
-                    </label>
-                    <input
-                      type="date"
-                      className={`form-control ${errors.completionDate ? "is-invalid" : ""}`}
-                      id="completionDate"
-                      value={formData.completionDate}
-                      onChange={handleInputChange}
-                    />
-                    {errors.completionDate && <div className="invalid-feedback">This field is required.</div>}
-                  </div>
-                  <div className="col-md-6">
+
+                  {/* <div className="col-md-6">
                     <label htmlFor="deliverable" className="form-label">
                       Deliverable
                     </label>
@@ -309,20 +523,22 @@ function AllTask() {
                       onChange={handleInputChange}
                     />
                     {errors.deliverable && <div className="invalid-feedback">This field is required.</div>}
-                  </div>
+                  </div> */}
                   <div className="col-md-12">
                     <label htmlFor="employeeSelect" className="form-label">
-                      Assign Employees
+                      Assign By({user.name})
                     </label>
-                    <Select
-                      id="employeeSelect"
-                      isMulti
-                      options={employeeOptions}
-                      value={selectedEmployees}
-                      onChange={setSelectedEmployees}
+                    <input
+                      type="text"
+                      className={`form-control ${errors.Assign ? "is-invalid" : ""}`}
+                      id="Assign"
+                      value={formData.Assign}  // Display user.name here
+                      onChange={handleInputChange}
+                      readOnly
                     />
-                    {errors.employees && <div className="invalid-feedback">Please select at least one employee.</div>}
+                    {errors.Assign && <div className="invalid-feedback">Please select at least one employee.</div>}
                   </div>
+
                   <div className="col-md-12">
                     <label htmlFor="notes" className="form-label">
                       Notes
@@ -382,150 +598,76 @@ function AllTask() {
       </div>
 
 
-      <div class="album py-5 bg-body-tertiary">
-        <div class="container">
+      <>
+        <> <div style={{ marginTop: "70px", width: '100rem', marginLeft: "300px" }}>
 
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {
+            useTasks.map((item, index) => {
+              return (
 
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
+                <MDBAccordion active={active} onChange={(itemId) => setActive(itemId)} key={index}>
+                  <MDBAccordionItem collapseId={index} headerTitle={`Task name ->  ${item.task_name}`} className="custom-accordion-header">
+                    <MDBCard>
+                      <MDBCardBody>
+                        <MDBCardTitle>{`Task name :   ${item.task_name}`}</MDBCardTitle>
+                        <MDBCardSubTitle>{`Task ID : ${item.task_id}`}</MDBCardSubTitle>
+                        <MDBCardText>
+                          {`Start Date : ${item.start_date}`}
+                        </MDBCardText>
+                        <MDBCardText>
+                          {`Deadline  : ${item.deadline}`}
+                        </MDBCardText>
+                        {
+                          item.priority == "P1" ? (
+                            <>
+                              <MDBCardText className="text ">
+                                {`Priority  : ${item.priority}`}
+                              </MDBCardText>
+                            </>
+                          ) :
+                            item.priority == "P3" ? (
+                              (
+                                <MDBCardText className="text2">
+                                  {`Priority  : ${item.priority}`}
+                                </MDBCardText>
 
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                              )
+                            ) :
+                              item.priority == "P2" ? (
+                                (
+                                  <MDBCardText className="text3">
+                                    {`Priority  : ${item.priority}`}
+                                  </MDBCardText>
+                                )
+                              ) : (
+                                <>
+                                  <h1>"Not Specified"</h1>
+                                </>
+                              )
+
+
+
+                        }
+                        <MDBCardText>
+                          {`Noted  : ${item.notes}`}
+                        </MDBCardText>
+                    
+
+
+                      </MDBCardBody>
+                    </MDBCard>
+                  </MDBAccordionItem>
+                </MDBAccordion>
+              )
+            })
+          }
+            
         </div>
-      </div>
+        
+        </>
+
+      </>
+
 
     </ProtectedRoute>
   );

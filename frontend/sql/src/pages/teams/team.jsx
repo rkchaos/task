@@ -19,12 +19,52 @@ function Team() {
                 });
                 setAllEmployees(res.data.data);
                 setUser(res.data.current);
+                // console.log(res.data.data)
             } catch (err) {
                 console.log(err);
             }
         }
         fetchData();
     }, []);
+    let [managerId, setManagerID] = useState([])
+    useEffect(() => {
+        async function fetchManager() {
+            const token = localStorage.getItem("token");
+            try {
+                let res = await axios.get("http://localhost:8080/with", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+                setManagerID(res.data.team)
+
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+        fetchManager()
+    }, [])
+    let [employeeProjects, setEmployeeprojects] = useState([])
+    useEffect(() => {
+        async function fetchEmployeeproject() {
+            const token = localStorage.getItem("token");
+            try {
+                const res = await axios.get("http://localhost:8080/employee", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                })
+                setEmployeeprojects(res.data.team)
+                // console.log(res.data.team)
+            }
+            catch (err) {
+                console.error(err)
+            }
+        }
+        fetchEmployeeproject()
+    }, [])
+
 
     return (
         <ProtectedRoute>
@@ -52,12 +92,13 @@ function Team() {
                             <table className="table colored-header datatable project-list" style={{ marginTop: "30px" }}>
                                 <thead>
                                     <tr>
-                                        <th>Project Name</th>
+                                        {/* <th>Project Name</th> */}
+                                        {/* <th>Project</th> */}
                                         <th>Employee ID</th>
-                                        <th>Name</th>
+                                        <th>Employee Name</th>
                                         <th>Mobile Number</th>
                                         <th>Email</th>
-                                        <th>Manager Name</th>
+                                        <th>Manager ID</th>
                                         <th>Department</th>
                                         <th>Designation</th>
                                     </tr>
@@ -65,9 +106,6 @@ function Team() {
                                 <tbody>
                                     {allEmployees.map((item, index) => (
                                         <tr key={index}>
-                                            <td>
-                                                <a href="#">Spot Media</a>
-                                            </td>
                                             <td>{item.employee_id}</td>
                                             <td>{item.name}</td>
                                             <td>{item.mobile_number}</td>
@@ -92,56 +130,103 @@ function Team() {
                                     ))}
                                 </tbody>
                             </table>
-                        ) : (
-                            <table className="table colored-header datatable project-list" style={{ marginTop: "30px" }}>
-                                <thead>
-                                    <tr>
-                                        <th>Project Name</th>
-                                        <th>Start Date</th>
-                                        <th>Duration</th>
-                                        <th>Progress</th>
-                                        <th>Priority</th>
-                                        <th>Manager</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <a href="#">Spot Media</a>
-                                        </td>
-                                        <td>18-05-2014</td>
-                                        <td>12 days</td>
-                                        <td>
-                                            <div className="progress">
-                                                <div
-                                                    className="progress-bar"
-                                                    data-transitiongoal={95}
-                                                    aria-valuenow={95}
-                                                    style={{ width: "95%" }}
-                                                >
-                                                    95%
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className="label label-warning">MEDIUM</span>
-                                        </td>
-                                        <td>
-                                            <img
-                                                src="https://bootdey.com/img/Content/avatar/avatar1.png"
-                                                alt="Avatar"
-                                                className="avatar img-circle"
-                                            />{" "}
-                                            <a href="#">Michael</a>
-                                        </td>
-                                        <td>
-                                            <span className="label label-success">ACTIVE</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        )}
+                        ) :
+                            user.designation === "manager" ? (
+                                <table className="table colored-header datatable project-list" style={{ marginTop: "30px" }}>
+                                    <thead>
+                                        <tr>
+                                            <th>Project Name</th>
+                                            <th>Employee ID</th>
+                                            <th>Employee Name</th>
+                                            <th>Mobile Number</th>
+                                            <th>Email</th>
+                                            <th>Manager ID</th>
+                                            <th>Department</th>
+                                            <th>Designation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {managerId.map((item, index) => (
+                                            <tr key={index}>
+                                                <td>{item.project}</td>
+                                                <td>{item.employee_id}</td>
+
+                                                <td>{item.name}</td>
+                                                <td>{item.mobile_number}</td>
+                                                <td>
+                                                    <span className="label label-warning">{item.email}</span>
+                                                </td>
+                                                <td>
+                                                    <img
+                                                        src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                                                        alt="Avatar"
+                                                        className="avatar img-circle"
+                                                    />{" "}
+                                                    <a href="#">{item.manager_id}</a>
+                                                </td>
+                                                <td>
+                                                    <span className="label label-success">{item.department}</span>
+                                                </td>
+                                                <td>
+                                                    <span className="label label-success">{item.designation}</span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) :
+                                user.designation === "employee" ? (
+                                    <table className="table colored-header datatable project-list" style={{ marginTop: "30px" }}>
+                                        <thead>
+                                            <tr>
+                                                <th>Project Name</th>
+                                                <th>Employee ID</th>
+                                                <th>Employee Name</th>
+                                                <th>Mobile Number</th>
+                                                <th>Email</th>
+                                                <th>Manager ID</th>
+                                                <th>Department</th>
+                                                <th>Designation</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                employeeProjects.map((item, index) => {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td>{item.project_name}</td>
+                                                            <td>{item.employee_id}</td>
+
+                                                            <td>{item.name}</td>
+                                                            <td>{item.mobile_number}</td>
+                                                            <td>
+                                                                <span className="label label-warning">{item.email}</span>
+                                                            </td>
+                                                            <td>
+                                                                <img
+                                                                    src="https://bootdey.com/img/Content/avatar/avatar1.png"
+                                                                    alt="Avatar"
+                                                                    className="avatar img-circle"
+                                                                />{" "}
+                                                                <a href="#">{item.manager_id}</a>
+                                                            </td>
+                                                            <td>
+                                                                <span className="label label-success">{item.department}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span className="label label-success">{item.designation}</span>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <>
+                                    </>
+                                )
+                        }
                     </div>
                 </div>
             </div>

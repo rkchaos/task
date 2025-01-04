@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Dashboard from "../../components/dashboard/Dashboard";
 import Select from "react-select";
-import ProtectedRoute from '../../components/protectedRoute/protectedRoute'; // import the ProtectedRoute component
+import ProtectedRoute from '../../components/protectedRoute/protectedRoute';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-
+import "./employee.css";
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+
 function Employee() {
-    let navugate = useNavigate()
+    let navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [user, setUser] = useState({});
     const [managerOptions, setManagerOptions] = useState([]);
     const [selectedManager, setSelectedManager] = useState(null);
-    let [allEmployees, setAllEmployees] = useState([])
+    let [allEmployees, setAllEmployees] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
         mobile_number: '',
@@ -25,8 +26,7 @@ function Employee() {
         dateofjoining: '',
         password: ''
     });
-    const [errors, setErrors] = useState({ mobileNumber: '' });
-
+    const [errors, setErrors] = useState({ mobile_number: '' });
 
     useEffect(() => {
         async function fetchData() {
@@ -40,9 +40,8 @@ function Employee() {
 
                 setUser(res.data.data);
 
-
                 const managers = res.data.data
-                    .filter(item => item.designation === "manager" || item.designation==="owner" ||item.designation==="admin")
+                    .filter(item => item.designation === "manager" || item.designation === "owner" || item.designation === "admin")
                     .map(manager => ({
                         value: manager.employee_id,
                         label: `${manager.employee_id}${"->"}${manager.name}`
@@ -55,6 +54,7 @@ function Employee() {
         }
         fetchData();
     }, []);
+
     useEffect(() => {
         async function fetchData() {
             const token = localStorage.getItem("token");
@@ -65,7 +65,7 @@ function Employee() {
                     }
                 });
                 setAllEmployees(res.data.data);
-                console.log(res.data.data)
+                // console.log(res.data.data);
             } catch (err) {
                 console.log(err);
             }
@@ -95,12 +95,9 @@ function Employee() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // if (formData.Designation.toLowerCase() !== 'employee') {
-        //     toast.error("Designation must be 'employee'");
-        //     return;
-        // }
         if (validateForm()) {
             const token = localStorage.getItem("token");
+            const formattedDate = new Date(formData.dateofjoining).toISOString().split('T')[0];
 
             const payload = {
                 name: formData.name,
@@ -109,7 +106,7 @@ function Employee() {
                 address: formData.address,
                 department: formData.Department,
                 designation: formData.Designation,
-                doj: formData.dateofjoining,
+                doj: formattedDate,
                 password: formData.password,
                 manager_id: selectedManager?.value || null,
             };
@@ -121,15 +118,14 @@ function Employee() {
                         "Content-Type": "application/json",
                     },
                 });
-                location.reload()
+                location.reload();
                 setShowModal(false); // Close modal on successful submission
             } catch (err) {
                 console.error("Error registering employee:", err.message);
-                toast.error("Email already exixts")
+                toast.error("Email already exists");
             }
         }
     };
-
 
     return (
         <ProtectedRoute>
@@ -140,14 +136,7 @@ function Employee() {
             <div>
                 <div className="container bootstrap snippets bootdey">
                     <div className="table-responsive">
-                        <div
-                            className="heading"
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-                        >
+                        <div className="heading" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                             <h1 style={{ fontFamily: "sans-serif", fontSize: "60px", fontWeight: "900" }}>
                                 Employee Management
                             </h1>
@@ -163,198 +152,185 @@ function Employee() {
                         <table className="table colored-header datatable project-list" style={{ marginTop: "80px" }}>
                             <thead>
                                 <tr>
-                                    <th>Employee ID </th>
-                                    <th>Employee Name </th>
-                                    <th>Mobile Number  </th>
+                                    <th>Employee ID</th>
+                                    <th>Employee Name</th>
+                                    <th>Mobile Number</th>
                                     <th>Email</th>
-                                    <th>Address </th>
-                                    <th>Manager Name </th>
-                                    <th>Department </th>
+                                    <th>Address</th>
+                                    <th>Manager Name</th>
+                                    <th>Department</th>
                                     <th>Designation</th>
                                     <th>Date of joining</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {/* <td>
-                                                {managerOptions.find(
-                                                    (manager) => manager.value === employee.manager_id
-                                                )?.label || "N/A"}
-                                            </td> */}
-                                {/* {allEmployees
-                                    .filter((employee) => employee.designation.toLowerCase() === "employee")
-                                    .map((employee) => (
-                                        <tr key={employee.id}>
-                                            <td>{employee.employee_id}</td>
-                                            <td>{employee.name}</td>
-                                            <td>{employee.mobile_number}</td>
-                                            <td>{employee.email}</td>
-                                            <td>{employee.address}</td>
-                                          
-                                            <td>{employee.department}</td>
-                                            <td>{employee.designation}</td>
-                                            <td>{employee.doj}</td>
-                                        </tr>
-                                    ))} */}
-                                {
-                                    allEmployees.map((item, index) => {
-                                        return (
-                                            <tr key={item.id}>
-                                                <td>{item.employee_id}</td>
-                                                <td>{item.name}</td>
-                                                <td>{item.mobile_number}</td>
-                                                <td>{item.email}</td>
-                                                <td>{item.address}</td>
-                                                <td>
+                                {allEmployees.map((item, index) => {
+                                    return (
+                                        <tr key={item.id}>
+                                            <td>{item.employee_id}</td>
+                                            <td>{item.name}</td>
+                                            <td>{item.mobile_number}</td>
+                                            <td>{item.email}</td>
+                                            <td>{item.address}</td>
+                                            <td>
                                                 {managerOptions.find(
                                                     (manager) => manager.value === item.manager_id
                                                 )?.label || "N/A"}
                                             </td>
-                                                <td>{item.department}</td>
-                                                <td>{item.designation}</td>
-                                                <td>{item.doj}</td>
-                                            </tr>
-                                        )
-                                    })
-                                }
+                                            <td>{item.department}</td>
+                                            <td>{item.designation}</td>
+                                            <td>{item.doj}</td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
-
                         </table>
                     </div>
                 </div>
             </div>
 
             {showModal && (
-                <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" role="dialog">
-                    <div className="modal-dialog" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Onboarding Employee</h5>
-                                <button style={{ border: "none", marginLeft: "50px" }} type="button" className="close" onClick={handleCloseModal}>
-                                    <span>&times;</span>
-                                </button>
-                            </div>
-                            <div className="modal-body">
-                                <form onSubmit={handleSubmit}>
-                                    <div className="form-group">
-                                        <label>Employee Name</label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleInputChange}
-                                            className="form-control"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Mobile Number</label>
-                                        <input
-                                            type="text"
-                                            name="mobile_number"
-                                            value={formData.mobile_number}
-                                            onChange={handleInputChange}
-                                            className="form-control"
-                                            maxLength="10"
-                                            required
-                                        />
-                                        {errors.mobileNumber && (
-                                            <small className="text-danger">{errors.mobileNumber}</small>
-                                        )}
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Email</label>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleInputChange}
-                                            className="form-control"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Address</label>
-                                        <input
-                                            type="text"
-                                            name="address"
-                                            value={formData.address}
-                                            onChange={handleInputChange}
-                                            className="form-control"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Manager Name</label>
-                                        <Select
-                                            id="managerSelect"
-                                            options={managerOptions}
-                                            value={selectedManager}
-                                            onChange={setSelectedManager}
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Department</label>
-                                        <input
-                                            type="text"
-                                            name="Department"
-                                            value={formData.Department}
-                                            onChange={handleInputChange}
-                                            className="form-control"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Designation</label>
-                                        <input
-                                            type="text"
-                                            name="Designation"
-                                            value={formData.Designation}
-                                            onChange={handleInputChange}
-                                            className="form-control"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Date of joining</label>
-                                        <input
-                                            type="Date"
-                                            name="dateofjoining"
-                                            value={formData.dateofjoining}
-                                            onChange={handleInputChange}
-                                            className="form-control"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Password</label>
-                                        <input
-                                            type="password"
-                                            name="password"
-                                            value={formData.password}
-                                            onChange={handleInputChange}
-                                            className="form-control"
-                                            required
-                                        />
-                                    </div>
-                                    <button type="submit" className="btn btn-primary" style={{ marginTop: "20px" }}>Save Employee</button>
-                                </form>
+                <>
+                    {/* Overlay for dim background */}
+                    <div className="modal-overlay"></div>
+
+                    {/* Modal */}
+                    <div className="modal fade show modal-animated" style={{ display: 'block', zIndex: 1050 }} tabIndex="-1" role="dialog">
+                        <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Onboarding Employee</h5>
+                                    <button type="button" className="close" onClick={handleCloseModal}>
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                                <div className="modal-body">
+                                    <form onSubmit={handleSubmit}>
+                                        <div className="form-group">
+                                            <label htmlFor="name">Name</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="name"
+                                                name="name"
+                                                value={formData.name}
+                                                onChange={handleInputChange}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="mobile_number">Mobile Number</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="mobile_number"
+                                                name="mobile_number"
+                                                value={formData.mobile_number}
+                                                onChange={handleInputChange}
+                                                required
+                                            />
+                                            {errors.mobile_number && (
+                                                <small className="text-danger">{errors.mobile_number}</small>
+                                            )}
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="email">Email</label>
+                                            <input
+                                                type="email"
+                                                className="form-control"
+                                                id="email"
+                                                name="email"
+                                                value={formData.email}
+                                                onChange={handleInputChange}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="address">Address</label>
+                                            <textarea
+                                                className="form-control"
+                                                id="address"
+                                                name="address"
+                                                value={formData.address}
+                                                onChange={handleInputChange}
+                                            ></textarea>
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="manager">Manager</label>
+                                            <Select
+                                                id="manager"
+                                                options={managerOptions}
+                                                value={selectedManager}
+                                                onChange={setSelectedManager}
+                                                placeholder="Select a manager"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="Department">Department</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="Department"
+                                                name="Department"
+                                                value={formData.Department}
+                                                onChange={handleInputChange}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="Designation">Designation</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="Designation"
+                                                name="Designation"
+                                                value={formData.Designation}
+                                                onChange={handleInputChange}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="dateofjoining">Date of Joining</label>
+                                            <input
+                                                type="date"
+                                                className="form-control"
+                                                id="dateofjoining"
+                                                name="dateofjoining"
+                                                value={formData.dateofjoining}
+                                                onChange={handleInputChange}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="password">Password</label>
+                                            <input
+                                                type="password"
+                                                className="form-control"
+                                                id="password"
+                                                name="password"
+                                                value={formData.password}
+                                                onChange={handleInputChange}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="modal-footer">
+                                            <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+                                                Close
+                                            </button>
+                                            <button type="submit" className="btn btn-primary">
+                                                Submit
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </>
             )}
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
+
+            <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} theme="dark" />
         </ProtectedRoute>
     );
 }

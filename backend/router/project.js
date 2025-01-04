@@ -7,6 +7,7 @@ const authMiddleware=require("../utils/authmiddleware")
 route.post("/project",projectController.project)
 route.get("/projectManager",authMiddleware.authenticateJWT,projectController.Allprojects)
 route.get("/AllProject",authMiddleware.authenticateJWT,projectController.Allproject)
+route.get("/project/name",authMiddleware.authenticateJWT,projectController.byname)
 
 
 
