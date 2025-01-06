@@ -12,7 +12,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(cors({
-    origin: ['https://taskmanager-k5fh66z02-rajs-projects-bbd5b6a9.vercel.app'],
+    origin: ['https://taskmanager-3p5iikazn-rajs-projects-bbd5b6a9.vercel.app'],
     methods: "GET,POST,PATCH,DELETE,PUT",
     credentials: true
 }))
