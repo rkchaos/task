@@ -17,7 +17,9 @@ app.use(cors({
     optionsSuccessStatus: 200,
 }));
 
-
+app.get("/raj",(req,res)=>{
+    res.send("Welcome to the project")
+})
 app.use(signup)
 app.use(login)
 app.use(user)
