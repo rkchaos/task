@@ -2,10 +2,10 @@ const mysql = require('mysql2/promise');
 
 
 const sqlDatabase = mysql.createPool({
-    host:process.env.HOST,
-    user:process.env.USER,
-    password:process.env.PASSWORD,
-    database:process.env.DATABASE,
+    host:"srv1021.hstgr.io",
+    user:"u627331871_System",
+    password:"System321#",
+    database:"u627331871_TaskMangSys"
    
 });
 
