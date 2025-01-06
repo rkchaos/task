@@ -17,14 +17,6 @@ app.use(cors({
     allowedHeaders: ['Authorization', 'Content-Type'], 
     optionsSuccessStatus: 200, 
 }));
-app.use((req, res, next) => {
-    console.log('Request Details:', {
-        method: req.method,
-        origin: req.headers.origin,
-        headers: req.headers,
-    });
-    next();
-});
 
 
 app.get("/raj",(req,res)=>{

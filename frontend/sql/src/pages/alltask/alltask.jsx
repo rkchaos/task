@@ -30,11 +30,13 @@ function AllTask() {
   const [projectOptions, setProjectOptions] = useState([]);
   const [user, setUser] = useState({})
 
+  const token = localStorage.getItem("token");
+  console.log(token)
   useEffect(() => {
     const fetchProjects = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/projectManager", {
+        const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/projectManager", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -49,7 +51,7 @@ function AllTask() {
       } catch (err) {
         if (err.response?.status === 401) {
             toast.error("Session expired. Please log in again.");
-            localStorage.removeItem("token");
+            // localStorage.removeItem("token");
             navigate("/login");
         } else {
             toast.error("Something went wrong.");
@@ -68,12 +70,12 @@ function AllTask() {
     const fetchProjects = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/AllProject", {
+        const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/AllProject", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        if (res.data.data) {
+        if (res.data?.data) {
           const projectOptions = res.data.data.map((project) => ({
             value: project.project_id, // Use project_id
             label: project.project_name, // Use project_name
@@ -83,7 +85,7 @@ function AllTask() {
       } catch (err) {
         if (err.response?.status === 401) {
             toast.error("Session expired. Please log in again.");
-            localStorage.removeItem("token");
+            // localStorage.removeItem("token");
             navigate("/login");
         } else {
             toast.error("Something went wrong.");
@@ -98,13 +100,15 @@ function AllTask() {
     }
 
   }, [userRole]);
+
+ 
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
     async function fetchUserData() {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
+        const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/user", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -114,7 +118,7 @@ function AllTask() {
       }catch (err) {
         if (err.response?.status === 401) {
             toast.error("Session expired. Please log in again.");
-            localStorage.removeItem("token");
+            // localStorage.removeItem("token");
             navigate("/login");
         } else {
             toast.error("Something went wrong.");
@@ -132,14 +136,14 @@ function AllTask() {
     async function fetchUserData() {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
+        const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/user", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
         });
         // setUserRole(res.data.current.designation);
         if (res.data.current.designation === "admin" || res.data.current.designation === "owner") {
-          const userRes = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
+          const userRes = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/user", {
             headers: {
               "Authorization": `Bearer ${token}`,
             },
@@ -147,7 +151,7 @@ function AllTask() {
 
           setUsers(userRes.data.data);
         } else if (res.data.current.designation === "manager") {
-          const userRes = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/particular_manager_employee", {
+          const userRes = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/particular_manager_employee", {
             headers: {
               "Authorization": `Bearer ${token}`,
             },
@@ -157,7 +161,7 @@ function AllTask() {
       } catch (err) {
         if (err.response?.status === 401) {
             toast.error("Session expired. Please log in again.");
-            localStorage.removeItem("token");
+            // localStorage.removeItem("token");
             navigate("/login");
         } else {
             toast.error("Something went wrong.");
@@ -252,7 +256,7 @@ function AllTask() {
     };
     // console.log(dataToSend)
     try {
-      const res = await axios.post("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/api/tasks", dataToSend, {
+      const res = await axios.post("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/api/tasks", dataToSend, {
         headers: {
           "Authorization": `Bearer ${token}`,
           // "Content-Type": "application/json"
@@ -265,7 +269,7 @@ function AllTask() {
     } catch (err) {
       if (err.response?.status === 401) {
           toast.error("Session expired. Please log in again.");
-          localStorage.removeItem("token");
+          // localStorage.removeItem("token");
           navigate("/login");
       } else {
           toast.error("Something went wrong.");
@@ -318,7 +322,7 @@ function AllTask() {
     async function alltask() {
       let token = localStorage.getItem("token")
       try {
-        let res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/tasks", {
+        let res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/tasks", {
           headers: {
             "Authorization": `Bearer ${token}`,
           }
