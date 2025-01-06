@@ -34,7 +34,7 @@ function AllTask() {
     const fetchProjects = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("http://localhost:8080/projectManager", {
+        const res = await axios.get("https://task-manager-sye7.onrender.com/projectManager", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -61,7 +61,7 @@ function AllTask() {
     const fetchProjects = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("http://localhost:8080/AllProject", {
+        const res = await axios.get("https://task-manager-sye7.onrender.com/AllProject", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -90,7 +90,7 @@ function AllTask() {
     async function fetchUserData() {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("http://localhost:8080/user", {
+        const res = await axios.get("https://task-manager-sye7.onrender.com/user", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -111,14 +111,14 @@ function AllTask() {
     async function fetchUserData() {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("http://localhost:8080/user", {
+        const res = await axios.get("https://task-manager-sye7.onrender.com/user", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
         });
         // setUserRole(res.data.current.designation);
         if (res.data.current.designation === "admin" || res.data.current.designation === "owner") {
-          const userRes = await axios.get("http://localhost:8080/user", {
+          const userRes = await axios.get("https://task-manager-sye7.onrender.com/user", {
             headers: {
               "Authorization": `Bearer ${token}`,
             },
@@ -126,7 +126,7 @@ function AllTask() {
 
           setUsers(userRes.data.data);
         } else if (res.data.current.designation === "manager") {
-          const userRes = await axios.get("http://localhost:8080/particular_manager_employee", {
+          const userRes = await axios.get("https://task-manager-sye7.onrender.com/particular_manager_employee", {
             headers: {
               "Authorization": `Bearer ${token}`,
             },
@@ -224,7 +224,7 @@ function AllTask() {
     };
     console.log(dataToSend)
     try {
-      const res = await axios.post("http://localhost:8080/api/tasks", dataToSend, {
+      const res = await axios.post("https://task-manager-sye7.onrender.com/api/tasks", dataToSend, {
         headers: {
           "Authorization": `Bearer ${token}`,
           // "Content-Type": "application/json"
@@ -282,7 +282,7 @@ function AllTask() {
     async function alltask() {
       let token = localStorage.getItem("token")
       try {
-        let res = await axios.get("http://localhost:8080/tasks", {
+        let res = await axios.get("https://task-manager-sye7.onrender.com/tasks", {
           headers: {
             "Authorization": `Bearer ${token}`,
           }
