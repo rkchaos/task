@@ -47,9 +47,16 @@ function AllTask() {
           setProjectOptions(projectOptions);
         }
       } catch (err) {
-        toast.error("Token expire please login again")
-        console.error("Error fetching projects:", err);
-      }
+        if (err.response?.status === 401) {
+            toast.error("Session expired. Please log in again.");
+            localStorage.removeItem("token");
+            navigate("/login");
+        } else {
+            toast.error("Something went wrong.");
+            console.error(err);
+        }
+    }
+    
     };
 
     if (userRole === "manager") {
@@ -74,9 +81,16 @@ function AllTask() {
           setProjectOptions(projectOptions);
         }
       } catch (err) {
-        toast.error("Something went wrong login again")
-        console.error("Error fetching projects:", err);
-      }
+        if (err.response?.status === 401) {
+            toast.error("Session expired. Please log in again.");
+            localStorage.removeItem("token");
+            navigate("/login");
+        } else {
+            toast.error("Something went wrong.");
+            console.error(err);
+        }
+    }
+    
     };
 
     if (userRole === "owner" || userRole === "admin") {
@@ -97,10 +111,17 @@ function AllTask() {
         });
         setUserRole(res.data.current.designation);
         setUser(res.data.current)
-      } catch (err) {
-        toast.error("Token expire please login again")
-        console.error(err);
-      }
+      }catch (err) {
+        if (err.response?.status === 401) {
+            toast.error("Session expired. Please log in again.");
+            localStorage.removeItem("token");
+            navigate("/login");
+        } else {
+            toast.error("Something went wrong.");
+            console.error(err);
+        }
+    }
+    
     }
     fetchUserData();
   }, []);
@@ -134,9 +155,16 @@ function AllTask() {
           setUsers(userRes.data.data);
         }
       } catch (err) {
-        toast.error("Token expire please login again")
-        console.error(err);
-      }
+        if (err.response?.status === 401) {
+            toast.error("Session expired. Please log in again.");
+            localStorage.removeItem("token");
+            navigate("/login");
+        } else {
+            toast.error("Something went wrong.");
+            console.error(err);
+        }
+    }
+    
     }
     fetchUserData();
   }, []);
@@ -234,9 +262,17 @@ function AllTask() {
       setErrors({});
       location.reload()
       console.log("Task created successfully:");
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
+    } catch (err) {
+      if (err.response?.status === 401) {
+          toast.error("Session expired. Please log in again.");
+          localStorage.removeItem("token");
+          navigate("/login");
+      } else {
+          toast.error("Something went wrong.");
+          console.error(err);
+      }
+  }
+  
 
 
   };

@@ -10,12 +10,14 @@ const task=require("./router/task")
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-
 app.use(cors({
-    origin: true,
-    credentials: true,
-    optionsSuccessStatus: 200,
+    origin: 'http://localhost:3000', 
+    credentials: true, 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    allowedHeaders: ['Authorization', 'Content-Type'], 
+    optionsSuccessStatus: 200, 
 }));
+
 
 app.get("/raj",(req,res)=>{
     res.send("Welcome to the project")
