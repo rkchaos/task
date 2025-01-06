@@ -3,11 +3,16 @@ import Dashboard from "../../components/dashboard/Dashboard";
 import "./team.css";
 import ProtectedRoute from '../../components/protectedRoute/protectedRoute';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 function Team() {
     let [allEmployees, setAllEmployees] = useState([]);
     let [user, setUser] = useState({});
-
+    const [loading, setLoading] = useState(true);
+    const [userLength, setUserLength] = useState(0)
     useEffect(() => {
         async function fetchData() {
             const token = localStorage.getItem("token");
@@ -19,13 +24,22 @@ function Team() {
                 });
                 setAllEmployees(res.data.data);
                 setUser(res.data.current);
-                // console.log(res.data.data)
+                setUserLength(res.data.data.length)
+              
             } catch (err) {
                 console.log(err);
             }
         }
-        fetchData();
+        const loadData = async () => {
+            await fetchData();
+            setTimeout(() => {
+                setLoading(false); 
+            }, 2000); 
+        };
+
+        loadData();
     }, []);
+    
     let [managerId, setManagerID] = useState([])
     useEffect(() => {
         async function fetchManager() {
@@ -40,7 +54,9 @@ function Team() {
 
             }
             catch (err) {
+                toast.error("Token expire please login again")
                 console.log(err)
+                
             }
         }
         fetchManager()
@@ -59,6 +75,7 @@ function Team() {
                 // console.log(res.data.team)
             }
             catch (err) {
+                toast.error("Token expire please login again")
                 console.error(err)
             }
         }
@@ -86,10 +103,12 @@ function Team() {
                                 MY Team
                             </h1>
                         </div>
-
-                        {/* Conditional Rendering */}
-                        {user.designation === "admin" || user.designation === "owner" ? (
-                            <table className="table colored-header datatable project-list" style={{ marginTop: "30px" }}>
+                        {loading ? (
+                            <Skeleton count={userLength} height={30} /> 
+                        ) : (
+                            <>
+                             {user.designation === "admin" || user.designation === "owner" ? (
+                            <table className="table colored-header datatable project-list table table-hover" style={{ marginTop: "30px" ,position:"sticky"}}>
                                 <thead>
                                     <tr>
                                         {/* <th>Project Name</th> */}
@@ -227,9 +246,26 @@ function Team() {
                                     </>
                                 )
                         }
+                            </>
+                        )
+                    }
+                       
+                       
                     </div>
                 </div>
             </div>
+             <ToastContainer
+                            position="top-right"
+                            autoClose={5000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="dark"
+                        />
         </ProtectedRoute>
     );
 }

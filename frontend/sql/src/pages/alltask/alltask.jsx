@@ -3,6 +3,8 @@ import Dashboard from "../../components/dashboard/Dashboard";
 // import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import ProtectedRoute from '../../components/protectedRoute/protectedRoute';
+// import SkeletonLoader from "../Skeleton/skeleton";
+import Skeleton from "react-loading-skeleton";
 import axios from "axios";
 import {
   MDBAccordion, MDBAccordionItem, MDBCard,
@@ -14,10 +16,13 @@ import {
   MDBCol
 } from 'mdb-react-ui-kit';
 import "./allTasks.css"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import moment from 'moment';
 
 function AllTask() {
   let navigate = useNavigate()
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   // const [selectedEmployees, setSelectedEmployees] = useState([]);
@@ -42,6 +47,7 @@ function AllTask() {
           setProjectOptions(projectOptions);
         }
       } catch (err) {
+        toast.error("Token expire please login again")
         console.error("Error fetching projects:", err);
       }
     };
@@ -68,6 +74,7 @@ function AllTask() {
           setProjectOptions(projectOptions);
         }
       } catch (err) {
+        toast.error("Something went wrong login again")
         console.error("Error fetching projects:", err);
       }
     };
@@ -91,6 +98,7 @@ function AllTask() {
         setUserRole(res.data.current.designation);
         setUser(res.data.current)
       } catch (err) {
+        toast.error("Token expire please login again")
         console.error(err);
       }
     }
@@ -126,6 +134,7 @@ function AllTask() {
           setUsers(userRes.data.data);
         }
       } catch (err) {
+        toast.error("Token expire please login again")
         console.error(err);
       }
     }
@@ -195,8 +204,7 @@ function AllTask() {
       setShowConfirmModal(true);
     }
   };
-  // console.log(formData)
-  // handleConfirmYes
+
   const handleConfirmYes = async () => {
     const token = localStorage.getItem("token");
 
@@ -232,24 +240,24 @@ function AllTask() {
 
 
   };
-  // console.log(formData)
+
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
 
-    // Update formData
+
     setFormData((prev) => {
       if (id === "projectName") {
-        // Find the corresponding project ID based on the selected project name
+
         const selectedProject = projectOptions.find(
 
           (project) => project.value == value
         );
-        // console.log(selectedProject)
+
         return {
           ...prev,
-          projectName: value, // Update projectName dynamically
-          projectId: selectedProject ? selectedProject.value : "", // Update projectId dynamically
+          projectName: value,
+          projectId: selectedProject ? selectedProject.value : "",
         };
       }
 
@@ -277,10 +285,8 @@ function AllTask() {
         let res = await axios.get("http://localhost:8080/tasks", {
           headers: {
             "Authorization": `Bearer ${token}`,
-            // "Content-Type": "application/json"
           }
         })
-        // console.log(res.data.tasks)
         const formattedTasks = res.data.tasks.map((item) => ({
           ...item,
           start_date: moment(item.start_date).format('MM/DD/YYYY hh:mm A'),
@@ -289,15 +295,20 @@ function AllTask() {
         }));
 
         setTasks(formattedTasks);
-        // console.log(formattedTasks)
-        // setTasks(res.data.tasks)
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000)
       }
 
       catch (err) {
         console.log(err)
+        setTimeout(() => {
+          setLoading(false);
+        }, 2000)
       }
+
     }
-    if (userRole == "owner" ||userRole == "admin"|| userRole == "employee" ||userRole== "manager") {
+    if (userRole == "owner" || userRole == "admin" || userRole == "employee" || userRole == "manager") {
       alltask()
     }
 
@@ -326,10 +337,14 @@ function AllTask() {
       <div className="position-relative">
         <div className="position-absolute top-0 end-0 d-flex align-items-center">
           {
-            userRole !== "employee" && (
-              <button type="button" className="btn btn-success me-2" onClick={handleAddTaskClick}>
-                +Add Task
-              </button>
+            loading ? (
+              <Skeleton  height={50} />
+            ) : (
+              userRole !== "employee" && (
+                <button type="button" className="btn btn-success me-2" onClick={handleAddTaskClick}>
+                  +Add Task
+                </button>
+              )
             )
           }
 
@@ -599,75 +614,59 @@ function AllTask() {
 
 
       <>
-        <> <div style={{ marginTop: "70px", width: '100rem', marginLeft: "300px" }}>
+        <>
+          <div style={{ marginTop: "70px", width: "100rem", marginLeft: "300px" }}>
+            {loading ? (
 
-          {
-            useTasks.map((item, index) => {
-              return (
+              Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} style={{ marginBottom: "20px" }}>
+                  <Skeleton height={30} width={"80%"} style={{ marginBottom: "10px" }} />
+                  <Skeleton count={4} height={20} width={"90%"} style={{ marginBottom: "10px" }} />
+                </div>
+              ))
+            ) : (
 
+              useTasks.map((item, index) => (
                 <MDBAccordion active={active} onChange={(itemId) => setActive(itemId)} key={index}>
-                  <MDBAccordionItem collapseId={index} headerTitle={`Task name ->  ${item.task_name}`} className="custom-accordion-header">
+                  <MDBAccordionItem collapseId={index} headerTitle={`Task name ->  ${item.task_name}`}>
                     <MDBCard>
                       <MDBCardBody>
-                        <MDBCardTitle>{`Task name :   ${item.task_name}`}</MDBCardTitle>
+                        <MDBCardTitle>{`Task name : ${item.task_name}`}</MDBCardTitle>
                         <MDBCardSubTitle>{`Task ID : ${item.task_id}`}</MDBCardSubTitle>
-                        <MDBCardText>
-                          {`Start Date : ${item.start_date}`}
-                        </MDBCardText>
-                        <MDBCardText>
-                          {`Deadline  : ${item.deadline}`}
-                        </MDBCardText>
-                        {
-                          item.priority == "P1" ? (
-                            <>
-                              <MDBCardText className="text ">
-                                {`Priority  : ${item.priority}`}
-                              </MDBCardText>
-                            </>
-                          ) :
-                            item.priority == "P3" ? (
-                              (
-                                <MDBCardText className="text2">
-                                  {`Priority  : ${item.priority}`}
-                                </MDBCardText>
-
-                              )
-                            ) :
-                              item.priority == "P2" ? (
-                                (
-                                  <MDBCardText className="text3">
-                                    {`Priority  : ${item.priority}`}
-                                  </MDBCardText>
-                                )
-                              ) : (
-                                <>
-                                  <h1>"Not Specified"</h1>
-                                </>
-                              )
-
-
-
-                        }
-                        <MDBCardText>
-                          {`Noted  : ${item.notes}`}
-                        </MDBCardText>
-                    
-
-
+                        <MDBCardText>{`Start Date : ${item.start_date}`}</MDBCardText>
+                        <MDBCardText>{`Deadline : ${item.deadline}`}</MDBCardText>
+                        {item.priority === "P1" ? (
+                          <MDBCardText className="text">{`Priority : ${item.priority}`}</MDBCardText>
+                        ) : item.priority === "P3" ? (
+                          <MDBCardText className="text2">{`Priority : ${item.priority}`}</MDBCardText>
+                        ) : item.priority === "P2" ? (
+                          <MDBCardText className="text3">{`Priority : ${item.priority}`}</MDBCardText>
+                        ) : (
+                          <h1>"Not Specified"</h1>
+                        )}
+                        <MDBCardText>{`Notes : ${item.notes}`}</MDBCardText>
                       </MDBCardBody>
                     </MDBCard>
                   </MDBAccordionItem>
                 </MDBAccordion>
-              )
-            })
-          }
-            
-        </div>
-        
+              ))
+            )}
+          </div>
         </>
 
       </>
-
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
 
     </ProtectedRoute>
   );

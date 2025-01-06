@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import "./DashboardContent.css";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);

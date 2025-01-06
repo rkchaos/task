@@ -6,15 +6,18 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import "./employee.css";
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import Skeleton from 'react-loading-skeleton';
+// import { useNavigate } from 'react-router-dom';
 
 function Employee() {
-    let navigate = useNavigate();
+    // let navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
     const [user, setUser] = useState({});
+    const [current ,setCurrent]=useState({})
     const [managerOptions, setManagerOptions] = useState([]);
     const [selectedManager, setSelectedManager] = useState(null);
     let [allEmployees, setAllEmployees] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         name: '',
         mobile_number: '',
@@ -40,6 +43,7 @@ function Employee() {
 
                 setUser(res.data.data);
 
+
                 const managers = res.data.data
                     .filter(item => item.designation === "manager" || item.designation === "owner" || item.designation === "admin")
                     .map(manager => ({
@@ -51,10 +55,15 @@ function Employee() {
             } catch (err) {
                 console.error(err);
             }
+            finally {
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
+            }
         }
         fetchData();
     }, []);
-
+console.log(user)
     useEffect(() => {
         async function fetchData() {
             const token = localStorage.getItem("token");
@@ -65,6 +74,7 @@ function Employee() {
                     }
                 });
                 setAllEmployees(res.data.data);
+                setCurrent(res.data.current)
                 // console.log(res.data.data);
             } catch (err) {
                 console.log(err);
@@ -88,6 +98,10 @@ function Employee() {
         let formErrors = {};
         if (formData.mobile_number && formData.mobile_number.length !== 10) {
             formErrors.mobile_number = 'Mobile number must be 10 digits long';
+        }
+        const validDesignations = ["employee", "admin", "owner", "manager"];
+        if (!validDesignations.includes(formData.Designation)) {
+            formErrors.Designation = 'Designation must be Employee, Admin, or Owner';
         }
         setErrors(formErrors);
         return Object.keys(formErrors).length === 0;
@@ -133,61 +147,87 @@ function Employee() {
                 <Dashboard />
             </div>
 
+
             <div>
                 <div className="container bootstrap snippets bootdey">
-                    <div className="table-responsive">
+                    <div className="table-responsive" >
                         <div className="heading" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                             <h1 style={{ fontFamily: "sans-serif", fontSize: "60px", fontWeight: "900" }}>
                                 Employee Management
                             </h1>
                         </div>
-                        <div className="position-relative">
-                            <div className="position-absolute top-0 end-0">
-                                <button type="button" className="btn btn-success" onClick={handleAddTaskClick}>
-                                    + Onboarding Employee
-                                </button>
-                            </div>
-                        </div>
 
-                        <table className="table colored-header datatable project-list" style={{ marginTop: "80px" }}>
-                            <thead>
-                                <tr>
-                                    <th>Employee ID</th>
-                                    <th>Employee Name</th>
-                                    <th>Mobile Number</th>
-                                    <th>Email</th>
-                                    <th>Address</th>
-                                    <th>Manager Name</th>
-                                    <th>Department</th>
-                                    <th>Designation</th>
-                                    <th>Date of joining</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {allEmployees.map((item, index) => {
-                                    return (
-                                        <tr key={item.id}>
-                                            <td>{item.employee_id}</td>
-                                            <td>{item.name}</td>
-                                            <td>{item.mobile_number}</td>
-                                            <td>{item.email}</td>
-                                            <td>{item.address}</td>
-                                            <td>
-                                                {managerOptions.find(
-                                                    (manager) => manager.value === item.manager_id
-                                                )?.label || "N/A"}
-                                            </td>
-                                            <td>{item.department}</td>
-                                            <td>{item.designation}</td>
-                                            <td>{item.doj}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+
+                        {
+                            current.designation == "admin" || current.designation == 'owner' ? (
+                                <>
+                                    <div className="position-relative">
+                                        <div className="position-absolute top-0 end-0">
+                                            <button type="button" className="btn btn-success" onClick={handleAddTaskClick}>
+                                                + Onboarding Employee
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <table className="table colored-header datatable project-list table table-hover " style={{ marginTop: "80px" }}>
+                                        <thead >
+                                            <tr>
+                                                <th>Employee ID</th>
+                                                <th>Employee Name</th>
+                                                <th>Mobile Number</th>
+                                                <th>Email</th>
+                                                <th>Address</th>
+                                                <th>Manager Name</th>
+                                                <th>Department</th>
+                                                <th>Designation</th>
+                                                <th>Date of joining</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {loading
+                                                ? Array.from({ length: 5 }).map((_, index) => (
+                                                    <tr key={index}>
+                                                        <td><Skeleton width={100} height={100} /></td>
+                                                        <td><Skeleton width={150} /></td>
+                                                        <td><Skeleton width={120} /></td>
+                                                        <td><Skeleton width={180} /></td>
+                                                        <td><Skeleton width={200} /></td>
+                                                        <td><Skeleton width={150} /></td>
+                                                        <td><Skeleton width={100} /></td>
+                                                        <td><Skeleton width={100} /></td>
+                                                        <td><Skeleton width={120} /></td>
+                                                    </tr>
+                                                ))
+                                                : allEmployees.map((item, index) => (
+                                                    <tr key={item.id}>
+                                                        <td>{item.employee_id}</td>
+                                                        <td>{item.name}</td>
+                                                        <td>{item.mobile_number}</td>
+                                                        <td>{item.email}</td>
+                                                        <td>{item.address}</td>
+                                                        <td>
+                                                            {managerOptions.find(
+                                                                (manager) => manager.value === item.manager_id
+                                                            )?.label || "N/A"}
+                                                        </td>
+                                                        <td>{item.department}</td>
+                                                        <td>{item.designation}</td>
+                                                        <td>{item.doj}</td>
+                                                    </tr>
+                                                ))}
+                                        </tbody>
+                                    </table>
+                                </>
+                            ) : (
+                                <>
+                                    <h1>Not having access</h1>
+                                </>
+                            )
+                        }
                     </div>
                 </div>
             </div>
+
 
             {showModal && (
                 <>
@@ -288,6 +328,9 @@ function Employee() {
                                                 onChange={handleInputChange}
                                                 required
                                             />
+                                            {errors.Designation && (
+                                                <small className="text-danger">{errors.Designation}</small>
+                                            )}
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="dateofjoining">Date of Joining</label>

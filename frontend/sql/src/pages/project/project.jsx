@@ -5,12 +5,14 @@ import Select from "react-select";
 import ProtectedRoute from '../../components/protectedRoute/protectedRoute';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import 'react-toastify/dist/ReactToastify.css';
 
 const Project = () => {
     const [showModal, setShowModal] = useState(false);
     const [confirmationModal, setConfirmationModal] = useState(false);
+    const [loading, setLoading] = useState(true);
     // const [selectedcurrent, setSelectedcurrent] = useState([]);
     const [user, setUser] = useState({});
     const [managerOptions, setManagerOptions] = useState([]);
@@ -180,6 +182,7 @@ const Project = () => {
                 toast.error("some thing went wrong")
                 console.error(err);
             }
+
         }
         fetchData();
     }, []);
@@ -207,8 +210,11 @@ const Project = () => {
                     setAllProject(res.data.data);
                 }
             } catch (err) {
-                // toast.error("some thing went wrong")
                 console.error(err);
+            } finally {
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000)
             }
         }
         fetchData();
@@ -234,6 +240,20 @@ const Project = () => {
         fetchEmployeeproject()
     }, [])
 
+    // skeleton 
+    useEffect(() => {
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
+    }, []);
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}`;
+    };
     return (
         <ProtectedRoute>
             <div>
@@ -257,139 +277,138 @@ const Project = () => {
                         </div>
                         <div className="position-relative">
                             <div className="position-absolute top-0 end-0">
-                                {userRole !== "employee" && (
-                                    <button type="button" className="btn btn-success" onClick={handleAddTaskClick}>
-                                        + Add Projects
-                                    </button>
+                                {loading ? (
+                                    <Skeleton width={150} height={40} />
+                                ) : (
+                                    userRole !== "employee" && (
+                                        <button type="button" className="btn btn-success" onClick={handleAddTaskClick}>
+                                            + Add Projects
+                                        </button>
+                                    )
                                 )}
                             </div>
                         </div>
-                        {(user.designation === "manager" && useProject.length > 0) ? (
-                            <table className="table colored-header datatable project-list" style={{ marginTop: "80px" }}>
-                                <thead>
-                                    <tr>
-                                        <th>Project ID </th>
-                                        <th>Project Name </th>
-                                        <th>Start Date </th>
-                                        <th>Deadline</th>
-                                        <th>Project progress</th>
-                                        <th>Completion date</th>
-                                        <th>Project Manager </th>
-                                        <th>Assigned by</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {useProject.map((item) => {
-                                        const formatDate = (dateString) => {
-                                            const date = new Date(dateString);
-                                            const year = date.getFullYear();
-                                            const month = ('0' + (date.getMonth() + 1)).slice(-2);  // Ensure 2-digit month
-                                            const day = ('0' + date.getDate()).slice(-2);  // Ensure 2-digit day
-                                            return `${year}-${month}-${day}`;  // Return formatted date
-                                        };
-
-                                        return (
-                                            <tr key={item.project_id}>
-                                                <td>{item.project_id}</td>
-                                                <td>{item.project_name}</td>
-                                                <td>{formatDate(item.start_date)}</td> {/* Format start_date */}
-                                                <td>{formatDate(item.end_date)}</td> {/* Format end_date */}
-                                                <td>{item.project_progress}</td>
-                                                <td>{formatDate(item.comp_date)}</td> {/* Format completion date */}
-                                                <td>{user.name}</td>
-                                                <td>{item.owner_id}</td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        ) : (user.designation === "admin" || user.designation === "owner") && allProject.length > 0 ? (
-                            <table className="table colored-header datatable project-list" style={{ marginTop: "80px" }}>
-                                <thead>
-                                    <tr>
-                                        <th>Project ID </th>
-                                        <th>Project Name </th>
-                                        <th>Start Date </th>
-                                        <th>Deadline</th>
-                                        <th>Project progress</th>
-                                        <th>Completion date</th>
-                                        <th>Project Manager </th>
-                                        <th>Assigned by</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {allProject.map((item) => {
-                                        const formatDate = (dateString) => {
-                                            const date = new Date(dateString);
-                                            const year = date.getFullYear();
-                                            const month = ('0' + (date.getMonth() + 1)).slice(-2);  // Ensure 2-digit month
-                                            const day = ('0' + date.getDate()).slice(-2);  // Ensure 2-digit day
-                                            return `${year}-${month}-${day}`;  // Return formatted date
-                                        };
-
-                                        return (
-                                            <tr key={item.project_id}>
-                                                <td>{item.project_id}</td>
-                                                <td>{item.project_name}</td>
-                                                <td>{formatDate(item.start_date)}</td> {/* Format start_date */}
-                                                <td>{formatDate(item.end_date)}</td> {/* Format end_date */}
-                                                <td>{item.project_progress}</td>
-                                                <td>{formatDate(item.comp_date)}</td> {/* Format completion date */}
-                                                <td>{item.manager_id}</td>
-                                                <td>{item.owner_id}</td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        ) : null}
-
-
-
-                        {user.designation === "employee" ? (
-                            <>
-                                <table className="table colored-header datatable project-list" style={{ marginTop: "80px" }}>
+                        <>
+                            {loading ? (
+                                <table className="table colored-header datatable project-list table table-hover" style={{ marginTop: "80px" }}>
                                     <thead>
                                         <tr>
-                                            {/* Removed Project ID and Assigned By */}
-                                            <th>Project Name</th>
-                                            <th>Start Date</th>
-                                            <th>Deadline</th>
-                                            <th>Project Progress</th>
-                                            <th>Completion Date</th>
-                                            <th>Project Manager</th>
-                                            <th>Department</th> {/* New Department column */}
+                                            <td><Skeleton width={100} height={100} /></td>
+                                            <td><Skeleton width={150} /></td>
+                                            <td><Skeleton width={120} /></td>
+                                            <td><Skeleton width={180} /></td>
+                                            <td><Skeleton width={200} /></td>
+                                            <td><Skeleton width={150} /></td>
+                                            <td><Skeleton width={100} /></td>
+                                            <td><Skeleton width={100} /></td>
+                                            <td><Skeleton width={120} /></td>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {employeeProjects.map((item, index) => {
-                                            const formatDate = (dateString) => {
-                                                const date = new Date(dateString);
-                                                const year = date.getFullYear();
-                                                const month = ('0' + (date.getMonth() + 1)).slice(-2);  // Ensure 2-digit month
-                                                const day = ('0' + date.getDate()).slice(-2);  // Ensure 2-digit day
-                                                return `${year}-${month}-${day}`;  // Return formatted date
-                                            };
-                                            return (
+                                        {[...Array(5)].map((_, index) => ( // Create 5 skeleton rows as placeholders
+                                            <tr key={index}>
+                                                <td><Skeleton width={100} height={100} /></td>
+                                                <td><Skeleton width={150} /></td>
+                                                <td><Skeleton width={120} /></td>
+                                                <td><Skeleton width={180} /></td>
+                                                <td><Skeleton width={200} /></td>
+                                                <td><Skeleton width={150} /></td>
+                                                <td><Skeleton width={100} /></td>
+                                                <td><Skeleton width={100} /></td>
+                                                <td><Skeleton width={120} /></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : user.designation === "manager" && useProject.length > 0 ? (
+                                <table className="table colored-header datatable project-list table table-hover" style={{ marginTop: "80px" }}>
+                                    <thead>
+                                        <tr>
+                                            <th>Project ID</th>
+                                            <th>Project Name</th>
+                                            <th>Start Date</th>
+                                            <th>Deadline</th>
+                                            <th>Project progress</th>
+                                            <th>Completion date</th>
+                                            <th>Project Manager</th>
+                                            <th>Assigned by</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {useProject.map((item) => (
+                                            <tr key={item.project_id}>
+                                                <td>{item.project_id}</td>
+                                                <td>{item.project_name}</td>
+                                                <td>{formatDate(item.start_date)}</td>
+                                                <td>{formatDate(item.end_date)}</td>
+                                                <td>{item.project_progress}</td>
+                                                <td>{formatDate(item.comp_date)}</td>
+                                                <td>{user.name}</td>
+                                                <td>{item.owner_id}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : user.designation === "admin" || user.designation === "owner" && allProject.length > 0 ? (
+                                <table className="table colored-header datatable project-list table table-hover" style={{ marginTop: "80px" }}>
+                                    <thead>
+                                        <tr>
+                                            <th>Project ID</th>
+                                            <th>Project Name</th>
+                                            <th>Start Date</th>
+                                            <th>Deadline</th>
+                                            <th>Project progress</th>
+                                            <th>Completion date</th>
+                                            <th>Project Manager</th>
+                                            <th>Assigned by</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {allProject.map((item) => (
+                                            <tr key={item.project_id}>
+                                                <td>{item.project_id}</td>
+                                                <td>{item.project_name}</td>
+                                                <td>{formatDate(item.start_date)}</td>
+                                                <td>{formatDate(item.end_date)}</td>
+                                                <td>{item.project_progress}</td>
+                                                <td>{formatDate(item.comp_date)}</td>
+                                                <td>{item.manager_id}</td>
+                                                <td>{item.owner_id}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : user.designation === "employee" ? (
+                                <>
+                                    <table className="table colored-header datatable project-list table table-hover" style={{ marginTop: "80px" }}>
+                                        <thead>
+                                            <tr>
+                                                <th>Project Name</th>
+                                                <th>Start Date</th>
+                                                <th>Deadline</th>
+                                                <th>Project Progress</th>
+                                                <th>Completion Date</th>
+                                                <th>Project Manager</th>
+                                                <th>Department</th> {/* New Department column */}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {employeeProjects.map((item, index) => (
                                                 <tr key={index}>
                                                     <td>{item.project_name}</td>
-                                                    <td>{formatDate(item.start_date)}</td> {/* Format start_date */}
-                                                    <td>{formatDate(item.deadline)}</td> {/* Format deadline */}
+                                                    <td>{formatDate(item.start_date)}</td>
+                                                    <td>{formatDate(item.deadline)}</td>
                                                     <td>{item.project_progress}</td>
-                                                    <td>{item.comp_date}</td> {/* Format completion date */}
+                                                    <td>{item.comp_date}</td>
                                                     <td>{item.manager_id}</td>
                                                     <td>{item.department}</td> {/* Show department */}
                                                 </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </>
-                        ) : (
-                            <>
-                                {/* Other roles logic (manager, admin, etc.) */}
-                            </>
-                        )}
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </>
+                            ) : null}
+                        </>
 
                     </div>
                 </div>
