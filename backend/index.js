@@ -12,10 +12,10 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(cors({
-    origin:true,
-    methods: "GET,POST,PATCH,DELETE,PUT",
-    credentials: true
-}))
+    origin: true,
+    credentials: true,
+    optionsSuccessStatus: 200,
+}));
 
 
 app.use(signup)
