@@ -26,7 +26,7 @@ function Sidebar() {
   useEffect(() => {
     async function data() {
       const token = localStorage.getItem("token")
-      let res = await axios.get("https://task-manager-sye7.onrender.com/user", {
+      let res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
         headers: {
           "Authorization": `Bearer ${token}`
         }

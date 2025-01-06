@@ -33,7 +33,7 @@ export default function Login() {
     e.preventDefault()
     if (validform()) {
       try {
-        let res = await axios.post("https://task-manager-sye7.onrender.com/login", formdata)
+        let res = await axios.post("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/login", formdata)
         localStorage.setItem("token", res.data.token)
 
         navigate("/tasks")

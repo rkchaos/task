@@ -17,7 +17,7 @@ function Team() {
         async function fetchData() {
             const token = localStorage.getItem("token");
             try {
-                let res = await axios.get("http://localhost:8080/user", {
+                let res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
@@ -45,7 +45,7 @@ function Team() {
         async function fetchManager() {
             const token = localStorage.getItem("token");
             try {
-                let res = await axios.get("http://localhost:8080/with", {
+                let res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/with", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
@@ -66,7 +66,7 @@ function Team() {
         async function fetchEmployeeproject() {
             const token = localStorage.getItem("token");
             try {
-                const res = await axios.get("http://localhost:8080/employee", {
+                const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/employee", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }

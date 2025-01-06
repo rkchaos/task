@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://task-manager-sye7.onrender.com"; 
+const API_BASE_URL = "https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app"; 
 
 
 export const getUserData = (token) => {

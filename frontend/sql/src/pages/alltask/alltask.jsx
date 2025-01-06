@@ -34,7 +34,7 @@ function AllTask() {
     const fetchProjects = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://task-manager-sye7.onrender.com/projectManager", {
+        const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/projectManager", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -61,7 +61,7 @@ function AllTask() {
     const fetchProjects = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://task-manager-sye7.onrender.com/AllProject", {
+        const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/AllProject", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -90,7 +90,7 @@ function AllTask() {
     async function fetchUserData() {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://task-manager-sye7.onrender.com/user", {
+        const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -111,14 +111,14 @@ function AllTask() {
     async function fetchUserData() {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://task-manager-sye7.onrender.com/user", {
+        const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
         });
         // setUserRole(res.data.current.designation);
         if (res.data.current.designation === "admin" || res.data.current.designation === "owner") {
-          const userRes = await axios.get("https://task-manager-sye7.onrender.com/user", {
+          const userRes = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
             headers: {
               "Authorization": `Bearer ${token}`,
             },
@@ -126,7 +126,7 @@ function AllTask() {
 
           setUsers(userRes.data.data);
         } else if (res.data.current.designation === "manager") {
-          const userRes = await axios.get("https://task-manager-sye7.onrender.com/particular_manager_employee", {
+          const userRes = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/particular_manager_employee", {
             headers: {
               "Authorization": `Bearer ${token}`,
             },
@@ -222,9 +222,9 @@ function AllTask() {
       updatedAt: new Date().toISOString(),   // updated_at in SQL
       notes: formData.notes                  // notes in SQL
     };
-    console.log(dataToSend)
+    // console.log(dataToSend)
     try {
-      const res = await axios.post("https://task-manager-sye7.onrender.com/api/tasks", dataToSend, {
+      const res = await axios.post("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/api/tasks", dataToSend, {
         headers: {
           "Authorization": `Bearer ${token}`,
           // "Content-Type": "application/json"
@@ -282,7 +282,7 @@ function AllTask() {
     async function alltask() {
       let token = localStorage.getItem("token")
       try {
-        let res = await axios.get("https://task-manager-sye7.onrender.com/tasks", {
+        let res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/tasks", {
           headers: {
             "Authorization": `Bearer ${token}`,
           }
