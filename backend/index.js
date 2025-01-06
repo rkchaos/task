@@ -23,6 +23,6 @@ app.use(login)
 app.use(user)
 app.use(project)
 app.use(task)
-app.listen(process.env.PORT,()=>{
-    console.log(`server is running on port ${process.env.PORT}`)
+app.listen(8080,()=>{
+    console.log(`server is running on port 8080`)
 })
