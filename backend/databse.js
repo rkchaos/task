@@ -14,12 +14,12 @@ async function testConnection() {
     try {
         const connection = await sqlDatabase.getConnection();
         console.log("Database connected successfully!");
-        connection.release(); // Release the connection back to the pool
+        connection.release(); 
     } catch (error) {
         console.error("Error connecting to the database:", error.message);
     }
 }
 
-// testConnection();
+testConnection();
 
 module.exports=sqlDatabase
