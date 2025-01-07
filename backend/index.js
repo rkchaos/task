@@ -11,10 +11,13 @@ const task=require("./router/task")
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: true,
-    credentials: true,
-    optionsSuccessStatus: 200,
+    origin: ["https://taskmanager-aazmlvh3m-rajs-projects-bbd5b6a9.vercel.app"], // Allow your frontend's deployed origin
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow these HTTP methods
+    credentials: true, // Allow credentials (cookies, Authorization headers)
 }));
+
+// Ensure OPTIONS requests are properly handled (important for preflight requests)
+app.options("*", cors());
 
 
 app.get("/raj",(req,res)=>{
