@@ -11,10 +11,10 @@ const task=require("./router/task")
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: true,
-    credentials: true,
-    optionsSuccessStatus: 200,
-}));
+    origin:"http://localhost:5173",
+    methods:["GET","POST","PUT","DELETE"],
+    credentials:true,
+}))
 
 
 app.get("/raj",(req,res)=>{
