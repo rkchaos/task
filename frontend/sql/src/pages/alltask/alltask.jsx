@@ -36,7 +36,7 @@ function AllTask() {
     const fetchProjects = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/projectManager", {
+        const res = await axios.get("https://task-orcin-nu.vercel.app/projectManager", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -70,7 +70,7 @@ function AllTask() {
     const fetchProjects = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/AllProject", {
+        const res = await axios.get("https://task-orcin-nu.vercel.app/AllProject", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -108,7 +108,7 @@ function AllTask() {
     async function fetchUserData() {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/user", {
+        const res = await axios.get("https://task-orcin-nu.vercel.app/user", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -136,14 +136,14 @@ function AllTask() {
     async function fetchUserData() {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/user", {
+        const res = await axios.get("https://task-orcin-nu.vercel.app/user", {
           headers: {
             "Authorization": `Bearer ${token}`
           }
         });
         // setUserRole(res.data.current.designation);
         if (res.data.current.designation === "admin" || res.data.current.designation === "owner") {
-          const userRes = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/user", {
+          const userRes = await axios.get("https://task-orcin-nu.vercel.app/user", {
             headers: {
               "Authorization": `Bearer ${token}`,
             },
@@ -151,7 +151,7 @@ function AllTask() {
 
           setUsers(userRes.data.data);
         } else if (res.data.current.designation === "manager") {
-          const userRes = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/particular_manager_employee", {
+          const userRes = await axios.get("https://task-orcin-nu.vercel.app/particular_manager_employee", {
             headers: {
               "Authorization": `Bearer ${token}`,
             },
@@ -256,7 +256,7 @@ function AllTask() {
     };
     // console.log(dataToSend)
     try {
-      const res = await axios.post("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/api/tasks", dataToSend, {
+      const res = await axios.post("https://task-orcin-nu.vercel.app/api/tasks", dataToSend, {
         headers: {
           "Authorization": `Bearer ${token}`,
           // "Content-Type": "application/json"
@@ -322,7 +322,7 @@ function AllTask() {
     async function alltask() {
       let token = localStorage.getItem("token")
       try {
-        let res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/tasks", {
+        let res = await axios.get("https://task-orcin-nu.vercel.app/tasks", {
           headers: {
             "Authorization": `Bearer ${token}`,
           }

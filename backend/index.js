@@ -11,7 +11,7 @@ const task=require("./router/task")
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: 'https://taskmanager-6phv8kuvc-rajs-projects-bbd5b6a9.vercel.app', // Frontend URL
+    origin: 'https://taskmanager-one-mu.vercel.app', // Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     credentials: true, // Allow cookies and credentials
 }))
