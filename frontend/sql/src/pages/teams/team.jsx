@@ -17,7 +17,7 @@ function Team() {
         async function fetchData() {
             const token = localStorage.getItem("token");
             try {
-                let res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/user", {
+                let res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/user", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
@@ -45,7 +45,7 @@ function Team() {
         async function fetchManager() {
             const token = localStorage.getItem("token");
             try {
-                let res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/with", {
+                let res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/with", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
@@ -66,7 +66,7 @@ function Team() {
         async function fetchEmployeeproject() {
             const token = localStorage.getItem("token");
             try {
-                const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/employee", {
+                const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/employee", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
