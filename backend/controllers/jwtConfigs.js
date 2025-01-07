@@ -1,3 +1,9 @@
-// jwtConfigs.js
-const secret = process.env.JWT_SECRET || 'fallback-secret'; 
-module.exports = { secret };
+
+const crypto = require('crypto');
+
+
+
+const secret = crypto.randomBytes(32).toString('hex');
+module.exports = {
+    secret: secret
+}

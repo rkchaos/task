@@ -35,7 +35,7 @@ function Employee() {
         async function fetchData() {
             const token = localStorage.getItem("token");
             try {
-                const res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
+                const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/user", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
@@ -68,7 +68,7 @@ console.log(user)
         async function fetchData() {
             const token = localStorage.getItem("token");
             try {
-                let res = await axios.get("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/user", {
+                let res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/user", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
@@ -126,7 +126,7 @@ console.log(user)
             };
 
             try {
-                const response = await axios.post("https://task-mmnrpiyxn-rajs-projects-bbd5b6a9.vercel.app/register", payload, {
+                const response = await axios.post("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/register", payload, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json",
