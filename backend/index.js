@@ -11,10 +11,10 @@ const task=require("./router/task")
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin:"https://taskmanager-aazmlvh3m-rajs-projects-bbd5b6a9.vercel.app",
-    methods:["GET","POST","PUT","DELETE"],
-    credentials:true,
-}))
+    origin: true,
+    credentials: true,
+    optionsSuccessStatus: 200,
+}));
 
 
 app.get("/raj",(req,res)=>{
