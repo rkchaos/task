@@ -11,7 +11,7 @@ const task=require("./router/task")
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: 'https://task-front-mu.vercel.app', // Frontend URL
+    origin: ['https://task-front-mu.vercel.app','http://localhost:5173'], // Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
     credentials: true, // Allow cookies and credentials
 }))
