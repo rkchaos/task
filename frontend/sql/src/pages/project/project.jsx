@@ -116,7 +116,7 @@ const Project = () => {
             return diffInDays; // Return the number of days elapsed
         }
         try {
-            await axios.post("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/project", payload, {
+            await axios.post("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/project", payload, {
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -143,7 +143,7 @@ const Project = () => {
         async function fetchUserData() {
             const token = localStorage.getItem("token");
             try {
-                const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/user", {
+                const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/user", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
@@ -162,7 +162,7 @@ const Project = () => {
         async function fetchData() {
             const token = localStorage.getItem("token");
             try {
-                const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/user", {
+                const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/user", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
@@ -195,14 +195,14 @@ const Project = () => {
             const token = localStorage.getItem("token");
             try {
                 if (user.designation === "manager") {
-                    const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/projectManager", {
+                    const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/projectManager", {
                         headers: {
                             "Authorization": `Bearer ${token}`
                         }
                     });
                     setUseProject(res.data.data);
                 } else if (user.designation === "admin" || user.designation === "owner") {
-                    const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/AllProject", {
+                    const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/AllProject", {
                         headers: {
                             "Authorization": `Bearer ${token}`
                         }
@@ -225,7 +225,7 @@ const Project = () => {
         async function fetchEmployeeproject() {
             const token = localStorage.getItem("token");
             try {
-                const res = await axios.get("https://task-958m-ao4jw9dp1-rajs-projects-bbd5b6a9.vercel.app/employee", {
+                const res = await axios.get("https://taskback-p0r6q8myh-rajs-projects-bbd5b6a9.vercel.app/employee", {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
