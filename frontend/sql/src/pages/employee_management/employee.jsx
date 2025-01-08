@@ -94,14 +94,14 @@ console.log(user)
         }));
     };
 
-    const validateForm = () => {
+     const validateForm = () => {
         let formErrors = {};
         if (formData.mobile_number && formData.mobile_number.length !== 10) {
             formErrors.mobile_number = 'Mobile number must be 10 digits long';
         }
         const validDesignations = ["employee", "admin", "owner", "manager"];
         if (!validDesignations.includes(formData.Designation)) {
-            formErrors.Designation = 'Designation must be Employee, Admin, or Owner';
+            formErrors.Designation = 'Designation must be employee, admin, owner or manager';
         }
         setErrors(formErrors);
         return Object.keys(formErrors).length === 0;
@@ -326,7 +326,7 @@ console.log(user)
                                                 name="Designation"
                                                 value={formData.Designation}
                                                 onChange={handleInputChange}
-                                                placeholder="Mention Employee, Admin or Owner"
+                                                 placeholder='admin,employee,manager,owner'
                                                 required
                                             />
                                             {errors.Designation && (
