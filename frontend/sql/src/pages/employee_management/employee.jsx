@@ -326,6 +326,7 @@ console.log(user)
                                                 name="Designation"
                                                 value={formData.Designation}
                                                 onChange={handleInputChange}
+                                                placeholder="Mention Employee, Admin or Owner"
                                                 required
                                             />
                                             {errors.Designation && (
